@@ -1,6 +1,5 @@
 import got from "got"
 import fastDecodeUriComponent from "fast-decode-uri-component"
-import urlParse from "url-parse"
 import fsp from "@absolunet/fsp"
 import preventStart from "prevent-start"
 import socket from "core:src/socket"
@@ -8,8 +7,8 @@ import logger from "core:lib/logger"
 import config from "core:lib/config"
 
 const gotOptions = {
-  baseUrl: "http://" + config.vlc.host + "/requests",
-  auth: ":" + config.vlc.password,
+  baseUrl: `http://${config.vlc.host}/requests`,
+  auth: `:${config.vlc.password}`,
   throwHttpErrors: false,
   retry: {
     retries: 3,
@@ -17,14 +16,42 @@ const gotOptions = {
   },
   json: true,
   port: config.vlc.port,
+  hooks: {
+    beforeRequest: [
+      request => {
+        logger.debug("Requested VLC API: %s", request.href)
+      },
+    ],
+  },
 }
 
 class Vlc {
 
   init() {
     socket.on("getVlcState", async callback => {
-      const state = await this.getState()
+      if (!vlcState) {
+        return "Kein Lebenszeichen vom Video Player."
+      }
+      if (vlcState.currentplid === -1) {
+        return "Gerade läuft nichts."
+      }
+      const videoFile = await vlc.getCurrentVideoPath()
+      if (!videoFile) {
+        return "Das gerade abgespielte Video finde ich nicht im Dateisystem, sorry!"
+      }
+      const info = await vlc.getMetaForVideo(videoFile)
+      if (!info) {
+        return "Dazu finde ich in meinen Unterlagen keine brauchbaren Informationen, sorry!"
+      }
       callback(state)
+    })
+    socket.on("getVlcVideo", async callback => {
+      const result = await this.sendCommand(command, query)
+      callback(result)
+    })
+    socket.on("sendVlcCommand", async (command, query, callback) => {
+      const result = await this.sendCommand(command, query)
+      callback(result)
     })
     logger.info("VLC is initialized")
   }
@@ -65,9 +92,7 @@ class Vlc {
     if (!playlistEntry) {
       return null
     }
-    const videoFile = playlistEntry.uri
-    |> preventStart(#, "file:///")
-    |> fastDecodeUriComponent
+    const videoFile = preventStart(playlistEntry.uri, "file:///") |> fastDecodeUriComponent
     const videoFileExists = await fsp.pathExists(videoFile)
     if (!videoFileExists) {
       return null
