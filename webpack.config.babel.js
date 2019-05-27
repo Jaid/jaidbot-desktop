@@ -1,15 +1,32 @@
-import {configureExecutable} from "webpack-config-jaid"
-import {NormalModuleReplacementPlugin} from "webpack"
+import path from "path"
 
-export default configureExecutable({
+import {configureExecutable, configureWebapp} from "webpack-config-jaid"
+
+const dashboardConfig = configureWebapp({
+  sourceFolder: "src/dashboard",
+  title: "Jaidbot Dashboard",
+  inlineSource: true,
+  outDir: path.join(__dirname, "dist", "package-dashboard", process.env.NODE_ENV || "development"),
   publishimo: {
     fetchGithub: true,
   },
-  extra: {
-    plugins: [
-      new NormalModuleReplacementPlugin(/index\.es\.js$/, resource => {
-        resource.resource = resource.resource.replace("es.js", "js")
-      }),
-    ],
+})
+
+const overlayConfig = configureWebapp({
+  sourceFolder: "src/overlay",
+  title: "Jaidbot Overlay",
+  inlineSource: true,
+  outDir: path.join(__dirname, "dist", "package-overlay", process.env.NODE_ENV || "development"),
+  publishimo: {
+    fetchGithub: true,
   },
 })
+
+const coreConfig = configureExecutable({
+  sourceFolder: "src/core",
+  publishimo: {
+    fetchGithub: true,
+  },
+})
+
+module.exports = [dashboardConfig, overlayConfig, coreConfig]

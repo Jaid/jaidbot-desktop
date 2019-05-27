@@ -1,0 +1,9 @@
+server:
+  host: localhost
+  port: 9411
+  password: INSERT
+  protocol: ws
+vlc:
+  host: localhost
+  port: 8080
+  password: INSERT

@@ -3,23 +3,35 @@ import fastDecodeUriComponent from "fast-decode-uri-component"
 import urlParse from "url-parse"
 import fsp from "@absolunet/fsp"
 import preventStart from "prevent-start"
+import socket from "core:src/socket"
+import logger from "core:lib/logger"
+import config from "core:lib/config"
 
 const gotOptions = {
-  auth: ":1",
+  baseUrl: "http://" + config.vlc.host + "/requests",
+  auth: ":" + config.vlc.password,
   throwHttpErrors: false,
   retry: {
-    retries: 1,
+    retries: 3,
     errorCodes: ["ETIMEDOUT", " ECONNRESET", "EADDRINUSE", "EPIPE", "ENOTFOUND", "ENETUNREACH", "EAI_AGAIN"],
   },
   json: true,
-  port: 8080,
+  port: config.vlc.port,
 }
 
-const Vlc = class {
+class Vlc {
+
+  init() {
+    socket.on("getVlcState", async callback => {
+      const state = await this.getState()
+      callback(state)
+    })
+    logger.info("VLC is initialized")
+  }
 
   async getState() {
     try {
-      const {body} = await got("http://127.0.0.1/requests/status.json", gotOptions)
+      const {body} = await got("status.json", gotOptions)
       return body
     } catch {
       return null
@@ -28,7 +40,7 @@ const Vlc = class {
 
   async getPlaylist() {
     try {
-      const {body: playlist} = await got("http://127.0.0.1/requests/playlist.json", gotOptions)
+      const {body: playlist} = await got("playlist.json", gotOptions)
       return playlist.children.find(({name}) => name === "Playlist")
     } catch {
       return null
@@ -81,7 +93,7 @@ const Vlc = class {
 
   async sendCommand(command, query) {
     try {
-      await got("http://127.0.0.1/requests/status.json", {
+      await got("status.json", {
         ...gotOptions,
         query: {
           command,
