@@ -29,25 +29,37 @@ class Vlc {
 
   init() {
     socket.on("getVlcState", async callback => {
+      const vlcState = await this.getState()
       if (!vlcState) {
-        return "Kein Lebenszeichen vom Video Player."
+        callback("noVlc")
+        return
       }
-      if (vlcState.currentplid === -1) {
-        return "Gerade läuft nichts."
-      }
-      const videoFile = await vlc.getCurrentVideoPath()
-      if (!videoFile) {
-        return "Das gerade abgespielte Video finde ich nicht im Dateisystem, sorry!"
-      }
-      const info = await vlc.getMetaForVideo(videoFile)
-      if (!info) {
-        return "Dazu finde ich in meinen Unterlagen keine brauchbaren Informationen, sorry!"
-      }
-      callback(state)
+      callback(vlcState)
     })
     socket.on("getVlcVideo", async callback => {
-      const result = await this.sendCommand(command, query)
-      callback(result)
+      const vlcState = await this.getState()
+      if (!vlcState) {
+        callback("noVlc")
+        return
+      }
+      if (vlcState.currentplid < 0) {
+        callback("noVideo")
+        return
+      }
+      const videoFile = await this.getCurrentVideoPath()
+      if (!videoFile) {
+        callback("videoNotOnDisk")
+        return
+      }
+      const videoInfo = await this.getMetaForVideo(videoFile)
+      if (!videoInfo) {
+        callback("noInfoFound")
+        return
+      }
+      callback({
+        videoInfo,
+        vlcState,
+      })
     })
     socket.on("sendVlcCommand", async (command, query, callback) => {
       const result = await this.sendCommand(command, query)
@@ -101,19 +113,23 @@ class Vlc {
   }
 
   async getMetaForVideo(videoFile) {
-    if (!videoFile) {
-      videoFile = await this.getCurrentVideoPath()
+    try {
       if (!videoFile) {
+        videoFile = await this.getCurrentVideoPath()
+        if (!videoFile) {
+          return null
+        }
+      }
+      const metaFile = videoFile.replace(/(mp4|webm|mov|flv|mkv)$/i, "info.json")
+      const metaFileExists = await fsp.pathExists(metaFile)
+      if (!metaFileExists) {
         return null
       }
+      const info = await fsp.readJson(metaFile)
+      return info
+    } catch (error) {
+      logger.warn(error)
     }
-    const metaFile = videoFile.replace(/\.(mp4|webm|mov|flv|mkv)$/i, ".info.json")
-    const metaFileExists = await fsp.pathExists(metaFile)
-    if (!metaFileExists) {
-      return null
-    }
-    const info = await fsp.readJson(metaFile)
-    return info
   }
 
   async sendCommand(command, query) {
