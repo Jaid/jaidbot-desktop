@@ -1,7 +1,7 @@
 {
   "title": "Jaidbot Desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fsp": "^1.6.1",
@@ -15,7 +15,7 @@
     "googleapis": "^40.0.0",
     "got": "^9.6.0",
     "humanize-duration": "^3.18.0",
-    "jaid-logger": "^1.1.1",
+    "jaid-logger": "^1.1.2",
     "millify": "^3.1.0",
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
@@ -36,14 +36,14 @@
     "ajv": "^6.10.0",
     "babel-jest": "^24.8.0",
     "babel-plugin-pkg": "^1.2.0",
-    "babel-preset-jaid": "^6.4.2",
+    "babel-preset-jaid": "^6.4.3",
     "caniuse-lite": "^1.0.30000971",
     "eslint": "^5.16.0",
     "eslint-config-jaid": "^1.13.0",
     "jest": "^24.8.0",
     "open-cli": "^5.0.0",
     "rimraf": "^2.6.3",
-    "webpack-config-jaid": "^5.5.0"
+    "webpack-config-jaid": "^5.5.1"
   },
   "scripts": {
     "clean": "rimraf dist/ test/**/dist/",
