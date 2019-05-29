@@ -1,3 +1,5 @@
+import path from "path"
+
 import got from "got"
 import fastDecodeUriComponent from "fast-decode-uri-component"
 import fsp from "@absolunet/fsp"
@@ -5,6 +7,7 @@ import preventStart from "prevent-start"
 import socket from "core:src/socket"
 import logger from "core:lib/logger"
 import config from "core:lib/config"
+import execa from "execa"
 
 const gotOptions = {
   baseUrl: `http://${config.vlc.host}/requests`,
@@ -56,14 +59,45 @@ class Vlc {
         callback("noInfoFound")
         return
       }
+      const {size: videoSize} = await fsp.stat(videoFile)
       callback({
         videoInfo,
+        videoFile,
+        videoSize,
         vlcState,
       })
     })
-    socket.on("sendVlcCommand", async (command, query, callback) => {
-      const result = await this.sendCommand(command, query)
+    socket.on("sendVlcCommand", async (command, callback) => {
+      const result = await this.sendCommand(command)
       callback(result)
+    })
+    socket.on("queueInfo", async ({videoInfo, commonParams}, callback) => {
+      try {
+        const infoFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.json`)
+        const downloadFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.${videoInfo.ext}`)
+        await fsp.outputJson(infoFile, videoInfo)
+        await execa(config.youtubeDl.path, [
+          ...commonParams,
+          "--mark-watched",
+          "audio-quality",
+          1,
+          "--load-info-json",
+          infoFile,
+          "--output",
+          downloadFile,
+        ])
+        execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", downloadFile], {
+          detached: true,
+          cleanup: false,
+        })
+        callback({
+          infoFile,
+          downloadFile,
+        })
+      } catch (error) {
+        logger.error("queueInfo: %s", error)
+        callback(false)
+      }
     })
     logger.info("VLC is initialized")
   }
@@ -120,7 +154,7 @@ class Vlc {
           return null
         }
       }
-      const metaFile = videoFile.replace(/(mp4|webm|mov|flv|mkv)$/i, "info.json")
+      const metaFile = videoFile.replace(/\.[\da-z]+$/i, ".json")
       const metaFileExists = await fsp.pathExists(metaFile)
       if (!metaFileExists) {
         return null
@@ -132,14 +166,11 @@ class Vlc {
     }
   }
 
-  async sendCommand(command, query) {
+  async sendCommand(query) {
     try {
       await got("status.json", {
         ...gotOptions,
-        query: {
-          command,
-          ...query,
-        },
+        query,
       })
       return true
     } catch {

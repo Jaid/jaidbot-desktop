@@ -7,3 +7,7 @@ vlc:
   host: localhost
   port: 8080
   password: INSERT
+  path: vlc
+youtubeDl:
+  path: youtube-dl
+  downloadFolder: E:/Downloads/Videos
