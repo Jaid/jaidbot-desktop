@@ -71,13 +71,20 @@ class Vlc {
       const result = await this.sendCommand(command)
       callback(result)
     })
-    socket.on("queueInfo", async ({videoInfo, commonParams}, callback) => {
+    socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
       try {
         const infoFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.json`)
         const downloadFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.${videoInfo.ext}`)
         await fsp.outputJson(infoFile, videoInfo)
         await execa(config.youtubeDl.path, [
-          ...commonParams,
+          "--no-color",
+          "--ignore-config",
+          "--abort-on-error",
+          "--netrc",
+          "--format",
+          downloadFormat,
+          "--cookies",
+          config.youtubeDl.cookieFile,
           "--mark-watched",
           "audio-quality",
           1,
