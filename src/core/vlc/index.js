@@ -8,6 +8,7 @@ import socket from "core:src/socket"
 import logger from "core:lib/logger"
 import config from "core:lib/config"
 import execa from "execa"
+import filenamify from "filenamify"
 
 const gotOptions = {
   baseUrl: `http://${config.vlc.host}/requests`,
@@ -74,7 +75,7 @@ class Vlc {
     socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
       try {
         const infoFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.json`)
-        const downloadFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.${videoInfo.ext}`)
+        const downloadFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, videoInfo.uploader |> filenamify, `${videoInfo.id |> filenamify}.${videoInfo.ext}`)
         await fsp.outputJson(infoFile, videoInfo)
         await execa(config.youtubeDl.path, [
           "--no-color",
