@@ -74,8 +74,10 @@ class Vlc {
     })
     socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
       try {
-        const infoFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, `${videoInfo.id}.json`)
-        const downloadFile = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, videoInfo.uploader |> filenamify, `${videoInfo.id |> filenamify}.${videoInfo.ext}`)
+        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, videoInfo.uploader |> filenamify)
+        const safeTitle = videoInfo.title |> filenamify
+        const infoFile = path.join(downloadFolder, `${safeTitle}.json`)
+        const downloadFile = path.join(downloadFolder, `${safeTitle |> filenamify}.${videoInfo.ext}`)
         await fsp.outputJson(infoFile, videoInfo)
         await execa(config.youtubeDl.path, [
           "--no-color",
