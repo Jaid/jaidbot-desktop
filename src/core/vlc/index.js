@@ -74,7 +74,7 @@ class Vlc {
     })
     socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
       try {
-        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor, videoInfo.uploader |> filenamify)
+        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify)
         const safeTitle = videoInfo.title |> filenamify
         const infoFile = path.join(downloadFolder, `${safeTitle}.json`)
         const downloadFile = path.join(downloadFolder, `${safeTitle |> filenamify}.${videoInfo.ext}`)
