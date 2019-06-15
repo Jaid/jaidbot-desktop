@@ -25,12 +25,12 @@
     "openurl2": "^1.0.1",
     "parse-duration": "^0.1.1",
     "pify": "^4.0.1",
-    "prevent-start": "^1.0.2",
+    "prevent-start": "^1.0.3",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "string-argv": "^0.3.0",
-    "twitch": "^2.2.5",
-    "twitch-chat-client": "^2.3.8",
+    "twitch": "^2.2.6",
+    "twitch-chat-client": "^2.3.9",
     "url-parse": "^1.4.7"
   },
   "devDependencies": {
