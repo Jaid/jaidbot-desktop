@@ -1,6 +1,6 @@
 {
   "title": "Jaidbot Desktop",
-  "private": true,
+  "private":true,"webpackConfigJaid":"INSERT",
   "version": "1.0.0",
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
@@ -42,7 +42,6 @@
     "eslint": "^5.16.0",
     "eslint-config-jaid": "^1.14.0",
     "jest": "^24.8.0",
-    "open-cli": "^5.0.0",
     "rimraf": "^2.6.3",
     "webpack-config-jaid": "^5.6.0"
   },
