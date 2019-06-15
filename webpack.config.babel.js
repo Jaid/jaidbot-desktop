@@ -1,6 +1,6 @@
 import path from "path"
 
-import {configureExecutable, configureWebapp} from "webpack-config-jaid"
+import configure, {configureWebapp} from "webpack-config-jaid"
 
 const dashboardConfig = configureWebapp({
   sourceFolder: "src/dashboard",
@@ -22,7 +22,7 @@ const overlayConfig = configureWebapp({
   },
 })
 
-const coreConfig = configureExecutable({
+const coreConfig = configure({
   sourceFolder: "src/core",
   publishimo: {
     fetchGithub: true,

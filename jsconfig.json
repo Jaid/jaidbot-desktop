@@ -6,11 +6,11 @@
       "root/*": [
         "./*"
       ],
-      "src/*": [
-        "src/*"
+      "core:src/*": [
+        "src/core/*"
       ],
-      "lib/*": [
-        "src/lib/*"
+      "core:lib/*": [
+        "src/core/lib/*"
       ],
     },
   },

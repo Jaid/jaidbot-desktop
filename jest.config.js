@@ -8,7 +8,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^root": "<rootDir>",
-    "^src": "<rootDir>/src",
-    "^lib": "<rootDir>/src/lib",
+    "^core:src": "<rootDir>/src/core",
+    "^core:lib": "<rootDir>/src/core/lib",
   },
 }
