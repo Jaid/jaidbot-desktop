@@ -8,7 +8,7 @@ import socket from "core:src/socket"
 import logger from "core:lib/logger"
 import config from "core:lib/config"
 import execa from "execa"
-import filenamify from "filenamify"
+import filenamify from "core:lib/filenamify"
 
 const gotOptions = {
   baseUrl: `http://${config.vlc.host}/requests`,
@@ -100,16 +100,17 @@ class Vlc {
           detached: true,
           cleanup: false,
         })
+        logger.info("VLC is initialized")
         callback({
           infoFile,
           downloadFile,
         })
+        return
       } catch (error) {
         logger.error("queueInfo: %s", error)
         callback(false)
       }
     })
-    logger.info("VLC is initialized")
   }
 
   async getState() {
