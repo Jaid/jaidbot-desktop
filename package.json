@@ -8,7 +8,7 @@
     "@absolunet/fsp": "^1.6.1",
     "@babel/runtime": "^7.4.5",
     "debug": "^4.1.1",
-    "essential-config": "^3.0.0",
+    "essential-config": "^3.0.1",
     "eventemitter3": "^3.1.2",
     "execa": "^1.0.0",
     "fast-decode-uri-component": "^1.0.1",
