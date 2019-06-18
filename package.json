@@ -39,7 +39,7 @@
     "babel-jest": "^24.8.0",
     "babel-plugin-pkg": "^1.2.1",
     "babel-preset-jaid": "^6.7.0",
-    "caniuse-lite": "^1.0.30000974",
+    "caniuse-lite": "^1.0.30000975",
     "eslint": "^5.16.0",
     "eslint-config-jaid": "^1.14.0",
     "jest": "^24.8.0",
