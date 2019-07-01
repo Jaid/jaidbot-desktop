@@ -100,7 +100,6 @@ class Vlc {
           detached: true,
           cleanup: false,
         })
-        logger.info("VLC is initialized")
         callback({
           infoFile,
           downloadFile,
@@ -109,8 +108,10 @@ class Vlc {
       } catch (error) {
         logger.error("queueInfo: %s", error)
         callback(false)
+        return
       }
     })
+    logger.info("VLC is initialized")
   }
 
   async getState() {
