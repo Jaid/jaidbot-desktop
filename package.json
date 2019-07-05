@@ -6,7 +6,7 @@
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fsp": "^1.6.1",
-    "@babel/runtime": "^7.4.5",
+    "@babel/runtime": "^7.5.0",
     "debug": "^4.1.1",
     "essential-config": "^3.0.1",
     "eventemitter3": "^4.0.0",
@@ -34,7 +34,7 @@
     "url-parse": "^1.4.7"
   },
   "devDependencies": {
-    "acorn": "^6.1.1",
+    "acorn": "^6.2.0",
     "ajv": "^6.10.0",
     "babel-jest": "^24.8.0",
     "babel-plugin-pkg": "^1.2.1",
