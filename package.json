@@ -6,7 +6,7 @@
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fsp": "^1.6.1",
-    "@babel/runtime": "^7.5.0",
+    "@babel/runtime": "^7.5.1",
     "debug": "^4.1.1",
     "essential-config": "^3.0.1",
     "eventemitter3": "^4.0.0",
@@ -29,13 +29,13 @@
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "string-argv": "^0.3.0",
-    "twitch": "^2.2.8",
-    "twitch-chat-client": "^2.3.11",
+    "twitch": "^3.0.0",
+    "twitch-chat-client": "^3.0.0",
     "url-parse": "^1.4.7"
   },
   "devDependencies": {
     "acorn": "^6.2.0",
-    "ajv": "^6.10.0",
+    "ajv": "^6.10.1",
     "babel-jest": "^24.8.0",
     "babel-plugin-pkg": "^1.2.1",
     "babel-preset-jaid": "^6.8.1",
@@ -44,7 +44,7 @@
     "eslint-config-jaid": "^1.18.0",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
-    "webpack-config-jaid": "^5.20.3"
+    "webpack-config-jaid": "^5.21.1"
   },
   "scripts": {
     "clean": "rimraf dist/",
