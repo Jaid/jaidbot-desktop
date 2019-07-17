@@ -9,6 +9,7 @@ import logger from "core:lib/logger"
 import config from "core:lib/config"
 import execa from "execa"
 import filenamify from "core:lib/filenamify"
+import findByExtension from "find-by-extension"
 
 const gotOptions = {
   baseUrl: `http://${config.vlc.host}/requests`,
@@ -77,7 +78,7 @@ class Vlc {
         const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify)
         const safeTitle = videoInfo.title |> filenamify
         const infoFile = path.join(downloadFolder, `${safeTitle}.json`)
-        const downloadFile = path.join(downloadFolder, `${safeTitle |> filenamify}.${videoInfo.ext}`)
+        const downloadFile = path.join(downloadFolder, `${safeTitle}.[ext]`)
         await fsp.outputJson(infoFile, videoInfo)
         await execa(config.youtubeDl.path, [
           "--no-color",
@@ -96,13 +97,17 @@ class Vlc {
           "--output",
           downloadFile,
         ])
-        execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", downloadFile], {
+        const actualDownloadFile = findByExtension(["webm", "mp4", "mkv", "avi", "flv"], {
+          absolute: true,
+          cwd: downloadFolder,
+        })
+        execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", actualDownloadFile], {
           detached: true,
           cleanup: false,
         })
         callback({
           infoFile,
-          downloadFile,
+          actualDownloadFile,
         })
         return
       } catch (error) {
