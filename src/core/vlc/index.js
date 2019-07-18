@@ -8,8 +8,8 @@ import socket from "core:src/socket"
 import logger from "core:lib/logger"
 import config from "core:lib/config"
 import execa from "execa"
-import filenamify from "core:lib/filenamify"
 import findByExtension from "find-by-extension"
+import filenamify from "filenamify-shrink"
 
 const gotOptions = {
   baseUrl: `http://${config.vlc.host}/requests`,
