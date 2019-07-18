@@ -78,7 +78,7 @@ class Vlc {
         const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify)
         const safeTitle = videoInfo.title |> filenamify
         const infoFile = path.join(downloadFolder, `${safeTitle}.json`)
-        const downloadFile = path.join(downloadFolder, `${safeTitle}.[ext]`)
+        const downloadFile = path.join(downloadFolder, safeTitle)
         await fsp.outputJson(infoFile, videoInfo)
         await execa(config.youtubeDl.path, [
           "--no-color",
