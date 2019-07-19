@@ -43,7 +43,7 @@
     "babel-preset-jaid": "^6.8.2",
     "caniuse-lite": "^1.0.30000984",
     "eslint": "^6.0.1",
-    "eslint-config-jaid": "^1.19.0",
+    "eslint-config-jaid": "^1.24.0",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
     "webpack-config-jaid": "^5.22.0"
