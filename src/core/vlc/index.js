@@ -76,7 +76,7 @@ class Vlc {
     })
     socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
       try {
-        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify, videoInfo.title |> file)
+        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify, videoInfo.title |> filenamify)
         const infoFile = path.join(downloadFolder, "info.json")
         const downloadFile = path.join(downloadFolder, "video")
         await fsp.outputJson(infoFile, videoInfo)
