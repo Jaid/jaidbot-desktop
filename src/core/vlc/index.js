@@ -10,6 +10,7 @@ import config from "core:lib/config"
 import execa from "execa"
 import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
+import {file} from "@babel/types"
 
 const gotOptions = {
   baseUrl: `http://${config.vlc.host}/requests`,
@@ -75,10 +76,9 @@ class Vlc {
     })
     socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
       try {
-        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify)
-        const safeTitle = videoInfo.title |> filenamify
-        const infoFile = path.join(downloadFolder, `${safeTitle}.json`)
-        const downloadFile = path.join(downloadFolder, safeTitle)
+        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamify, videoInfo.uploader |> filenamify, videoInfo.title |> file)
+        const infoFile = path.join(downloadFolder, "info.json")
+        const downloadFile = path.join(downloadFolder, "video")
         await fsp.outputJson(infoFile, videoInfo)
         await execa(config.youtubeDl.path, [
           "--no-color",
