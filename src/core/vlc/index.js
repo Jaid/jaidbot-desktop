@@ -175,7 +175,8 @@ class Vlc {
           return null
         }
       }
-      const metaFile = videoFile.replace(/\.[\da-z]+$/i, ".json")
+      const videoFolder = path.dirname(videoFile)
+      const metaFile = path.join(videoFolder, "info.json")
       const metaFileExists = await fsp.pathExists(metaFile)
       if (!metaFileExists) {
         return null
