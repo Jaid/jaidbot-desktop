@@ -12,7 +12,7 @@ import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
 
 const filenamifyExtreme = string => {
-  return string.replace(/([#$%])/g, "") |> filenamify
+  return string.replace(/([#$%&])/g, "") |> filenamify
 }
 
 const gotOptions = {
