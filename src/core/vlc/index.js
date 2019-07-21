@@ -105,6 +105,7 @@ class Vlc {
           absolute: true,
           cwd: downloadFolder,
         })
+        logger.info("Adding to VLC: %s", actualDownloadFile)
         execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", actualDownloadFile], {
           detached: true,
           cleanup: false,
