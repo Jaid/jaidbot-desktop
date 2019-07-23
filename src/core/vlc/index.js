@@ -10,6 +10,7 @@ import config from "core:lib/config"
 import execa from "execa"
 import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
+import filesize from "filesize"
 
 const filenamifyExtreme = string => {
   return string.replace(/([#$%&.])/g, "") |> filenamify
@@ -84,6 +85,7 @@ class Vlc {
         const infoFile = path.join(downloadFolder, "info.json")
         const downloadFile = path.join(downloadFolder, safeTitle)
         await fsp.outputJson(infoFile, videoInfo)
+        logger.debug("Preparing video: %s", videoInfo.title)
         await execa(config.youtubeDl.path, [
           "--no-color",
           "--ignore-config",
@@ -105,12 +107,16 @@ class Vlc {
           absolute: true,
           cwd: downloadFolder,
         })
-        logger.info("Adding to VLC: %s", actualDownloadFile)
-        execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", actualDownloadFile], {
-          detached: true,
-          cleanup: false,
-        })
+        const stat = await fsp.stat(actualDownloadFile)
+        const bytes = stat.size
+        logger.info("Downloaded %s bytes to %s", bytes |> filesize, actualDownloadFile)
+        // logger.info("Adding to VLC: %s", actualDownloadFile)
+        // execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", actualDownloadFile], {
+        //   detached: true,
+        //   cleanup: false,
+        // })
         callback({
+          bytes,
           infoFile,
           actualDownloadFile,
         })
