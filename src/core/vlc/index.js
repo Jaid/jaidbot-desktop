@@ -78,7 +78,7 @@ class Vlc {
       const result = await this.sendCommand(command)
       callback(result)
     })
-    socket.on("queueInfo", async ({videoInfo, downloadFormat}, callback) => {
+    socket.on("queueInfo", async ({videoId, videoInfo, downloadFormat}) => {
       try {
         const safeTitle = videoInfo.title |> filenamifyExtreme
         const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
@@ -86,7 +86,7 @@ class Vlc {
         const downloadFile = path.join(downloadFolder, safeTitle)
         await fsp.outputJson(infoFile, videoInfo)
         logger.debug("Preparing video: %s", videoInfo.title)
-        await execa(config.youtubeDl.path, [
+        const execResult = await execa(config.youtubeDl.path, [
           "--no-color",
           "--ignore-config",
           "--abort-on-error",
@@ -110,20 +110,25 @@ class Vlc {
         const stat = await fsp.stat(actualDownloadFile)
         const bytes = stat.size
         logger.info("Downloaded %s bytes to %s", bytes |> filesize, actualDownloadFile)
+        socket.emit("videoDownloaded", {
+          videoId,
+          bytes,
+          infoFile,
+          videoFile: actualDownloadFile,
+        })
         // logger.info("Adding to VLC: %s", actualDownloadFile)
         // execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", actualDownloadFile], {
         //   detached: true,
         //   cleanup: false,
         // })
-        callback({
-          bytes,
-          infoFile,
-          actualDownloadFile,
-        })
+        // callback({
+        //   bytes,
+        //   infoFile,
+        //   actualDownloadFile,
+        // })
         return
       } catch (error) {
         logger.error("queueInfo: %s", error)
-        callback(false)
         return
       }
     })
