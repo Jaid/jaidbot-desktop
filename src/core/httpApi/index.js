@@ -19,8 +19,8 @@ class HttpApi {
         response.send("EMPTY")
       }
     })
-    this.app.listen(31310)
-    logger.info("HTTP API listens to %s", 31310)
+    this.app.listen(config.httpApiPort)
+    logger.info("HTTP API listens to %s", config.httpApiPort)
   }
 
 }
