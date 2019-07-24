@@ -221,7 +221,7 @@ class Vlc {
 
   async sendStatusToServer() {
     const status = await this.getState()
-    if (!status) {
+    if (!status?.information) {
       return
     }
     const durationValue = status.information.category.meta.DURATION
