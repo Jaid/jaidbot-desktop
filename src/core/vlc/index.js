@@ -233,6 +233,7 @@ class Vlc {
       position: status.position,
       state: status.state,
       timestampMs: Math.floor(durationMs * status.position),
+      file: status.information.category.meta.filename,
     })
   }
 
