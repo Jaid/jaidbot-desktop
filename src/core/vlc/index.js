@@ -135,7 +135,8 @@ class Vlc {
     try {
       const {body} = await this.got("status.json")
       return body
-    } catch {
+    } catch (error) {
+      logger.error("Could not get VLC state\n%s", error)
       return null
     }
   }
@@ -220,9 +221,19 @@ class Vlc {
 
   async sendStatusToServer() {
     const status = await this.getState()
+    if (!status) {
+      return
+    }
     const durationValue = status.information.category.meta.DURATION
-    const durationParsed = /^(<?hours>\d+):(<?minutes>\d+):(<?seconds>\d+)\.(<?millis>\d+)/.exec(durationValue).groups
-    debugger
+    const durationParsed = /(?<hours>\d+):(?<minutes>\d+):(?<seconds>[\d.]+)/.exec(durationValue).groups
+    const durationSeconds = Number(durationParsed.seconds) + durationParsed.minutes * 60 + durationParsed.hours * 3600
+    const durationMs = Math.floor(durationSeconds * 1000)
+    socket.emit("vlcState", {
+      durationMs,
+      position: status.position,
+      state: status.state,
+      timestampMs: Math.floor(durationMs * status.position),
+    })
   }
 
 }
