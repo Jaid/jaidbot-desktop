@@ -23,6 +23,7 @@ import configure, {configureWebapp} from "webpack-config-jaid"
 // })
 
 const coreConfig = configure({
+  type: "cli",
   sourceFolder: "src/core",
   publishimo: {
     fetchGithub: true,
