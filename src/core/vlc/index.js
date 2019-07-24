@@ -11,33 +11,34 @@ import execa from "execa"
 import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
 import filesize from "filesize"
+import {sortBy, last} from "lodash"
 
 const filenamifyExtreme = string => {
   return string.replace(/([#$%&.])/g, "") |> filenamify
 }
 
-const gotOptions = {
-  baseUrl: `http://${config.vlc.host}/requests`,
-  auth: `:${config.vlc.password}`,
-  throwHttpErrors: false,
-  retry: {
-    retries: 3,
-    errorCodes: ["ETIMEDOUT", " ECONNRESET", "EADDRINUSE", "EPIPE", "ENOTFOUND", "ENETUNREACH", "EAI_AGAIN"],
-  },
-  json: true,
-  port: config.vlc.port,
-  hooks: {
-    beforeRequest: [
-      request => {
-        logger.debug("Requested VLC API: %s", request.href)
-      },
-    ],
-  },
-}
-
 class Vlc {
 
   init() {
+    this.got = got.extend({
+      baseUrl: `http://${config.vlc.host}/requests`,
+      auth: `:${config.vlc.password}`,
+      throwHttpErrors: false,
+      retry: {
+        retries: 3,
+        errorCodes: ["ETIMEDOUT", " ECONNRESET", "EADDRINUSE", "EPIPE", "ENOTFOUND", "ENETUNREACH", "EAI_AGAIN"],
+      },
+      json: true,
+      port: config.vlc.port,
+      hooks: {
+        beforeRequest: [
+          request => {
+            logger.debug("Requested VLC API: %s", request.href)
+          },
+        ],
+      },
+    })
+
     socket.on("getVlcState", async callback => {
       const vlcState = await this.getState()
       if (!vlcState) {
@@ -116,16 +117,6 @@ class Vlc {
           infoFile,
           videoFile: actualDownloadFile,
         })
-        // logger.info("Adding to VLC: %s", actualDownloadFile)
-        // execa(config.vlc.path, ["--one-instance", "--playlist-enqueue", actualDownloadFile], {
-        //   detached: true,
-        //   cleanup: false,
-        // })
-        // callback({
-        //   bytes,
-        //   infoFile,
-        //   actualDownloadFile,
-        // })
         return
       } catch (error) {
         logger.error("queueInfo: %s", error)
@@ -135,9 +126,14 @@ class Vlc {
     logger.info("VLC is initialized")
   }
 
+  async queueFile(file) {
+    await this.got(`playlist.json?command=in_play&input=file:///${file}`)
+    logger.info("Playing %s", file)
+  }
+
   async getState() {
     try {
-      const {body} = await got("status.json", gotOptions)
+      const {body} = await this.got("status.json")
       return body
     } catch {
       return null
@@ -146,7 +142,7 @@ class Vlc {
 
   async getPlaylist() {
     try {
-      const {body: playlist} = await got("playlist.json", gotOptions)
+      const {body: playlist} = await this.got("playlist.json")
       return playlist.children.find(({name}) => name === "Playlist")
     } catch {
       return null
@@ -160,6 +156,19 @@ class Vlc {
       return null
     }
     const playlistEntry = playlist.children.find(({id}) => Number(id) === state.currentplid)
+    if (!playlistEntry) {
+      return null
+    }
+    return playlistEntry
+  }
+
+  async getLastVideo() {
+    const state = await this.getState()
+    const playlist = await this.getPlaylist()
+    if (!state || !playlist) {
+      return null
+    }
+    const playlistEntry = sortBy(playlist.children, "id") |> last
     if (!playlistEntry) {
       return null
     }
@@ -202,10 +211,7 @@ class Vlc {
 
   async sendCommand(query) {
     try {
-      await got("status.json", {
-        ...gotOptions,
-        query,
-      })
+      await this.got("status.json", {query})
       return true
     } catch {
       return null
