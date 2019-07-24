@@ -218,6 +218,13 @@ class Vlc {
     }
   }
 
+  async sendStatusToServer() {
+    const status = await this.getState()
+    const durationValue = status.information.category.meta.DURATION
+    const durationParsed = /^(<?hours>\d+):(<?minutes>\d+):(<?seconds>\d+)\.(<?millis>\d+)/.exec(durationValue).groups
+    debugger
+  }
+
 }
 
 export default new Vlc
