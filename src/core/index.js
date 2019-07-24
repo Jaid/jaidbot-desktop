@@ -6,7 +6,6 @@ import ms from "ms.macro"
 import socket from "core:src/socket"
 import emitPromise from "emit-promise"
 import hasContent from "has-content"
-import fsp from "@absolunet/fsp"
 
 logger.info(`${_PKG_TITLE} v${_PKG_VERSION}`)
 
@@ -16,9 +15,10 @@ const job = async () => {
   const videosToDownload = await emitPromise(socket, "getDownloadJobs")
   if (videosToDownload |> hasContent) {
     logger.info("%s videos to download", videosToDownload.length)
-    const jobs = videosToDownload.map(async ({infoFile}) => {
-      const videoInfo = await fsp.readJson(infoFile)
-      await vlc.download(videoInfo)
+    const jobs = videosToDownload.map(async ({id, downloadFormat, info}) => {
+      info.videoId = id
+      info.downloadFormat = downloadFormat
+      await vlc.download(info)
     })
     await Promise.all(jobs)
   }

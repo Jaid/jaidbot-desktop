@@ -79,12 +79,6 @@ class Vlc {
     socket.on("queueInfo", async ({videoId, videoInfo, downloadFormat}) => {
       videoInfo.videoId = videoId
       videoInfo.downloadFormat = downloadFormat
-      const {infoFile} = this.getPathsFromVideoInfo(videoInfo)
-      await fsp.outputJson(infoFile, videoInfo |> sortKeys)
-      socket.emit("setInfoFile", {
-        videoId,
-        infoFile,
-      })
       await this.download(videoInfo)
     })
     logger.info("VLC is initialized")
@@ -110,6 +104,14 @@ class Vlc {
     try {
       const {infoFile, downloadFile, downloadFolder} = this.getPathsFromVideoInfo(videoInfo)
       logger.debug("Preparing video: %s", videoInfo.title)
+      const infoFileExists = await fsp.pathExists(infoFile)
+      if (!infoFileExists) {
+        await fsp.outputJson(infoFile, videoInfo |> sortKeys)
+        socket.emit("setInfoFile", {
+          infoFile,
+          videoId: videoInfo.videoId,
+        })
+      }
       const execResult = await execa(config.youtubeDl.path, [
         "--no-color",
         "--ignore-config",
