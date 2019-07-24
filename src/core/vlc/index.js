@@ -81,6 +81,27 @@ class Vlc {
       videoInfo.downloadFormat = downloadFormat
       await this.download(videoInfo)
     })
+    socket.on("fetchVideoInfo", async (url, callback) => {
+      try {
+        const execResult = await execa(config.youtubeDl.path, [
+          "--no-color",
+          "--ignore-config",
+          "--netrc",
+          "--cookies",
+          config.youtubeDl.cookieFile,
+          "--dump-single-json",
+          url,
+        ])
+        const videoInfo = execResult.stdout |> JSON.parse
+        logger.info("Successfully fetched video info for the server")
+        callback(videoInfo)
+        return
+      } catch (error) {
+        logger.error("Tried backup method of fetching video info of %s for the server, failed.\n%s", url, error)
+        callback(false)
+        return
+      }
+    })
     logger.info("VLC is initialized")
   }
 
