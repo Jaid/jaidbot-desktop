@@ -3,12 +3,25 @@ import vlc from "core:src/vlc"
 import httpApi from "core:src/httpApi"
 import intervalPromise from "interval-promise"
 import ms from "ms.macro"
+import socket from "core:src/socket"
+import emitPromise from "emit-promise"
+import hasContent from "has-content"
+import fsp from "@absolunet/fsp"
 
 logger.info(`${_PKG_TITLE} v${_PKG_VERSION}`)
 
 const job = async () => {
   vlc.init()
   await httpApi.init()
+  const videosToDownload = await emitPromise(socket, "getDownloadJobs")
+  if (videosToDownload |> hasContent) {
+    logger.info("%s videos to download", videosToDownload.length)
+    const jobs = videosToDownload.map(async ({infoFile}) => {
+      const videoInfo = await fsp.readJson(infoFile)
+      await vlc.download(videoInfo)
+    })
+    await Promise.all(jobs)
+  }
   intervalPromise(() => vlc.sendStatusToServer(), ms`5 seconds`)
 }
 

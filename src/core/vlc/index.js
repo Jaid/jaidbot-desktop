@@ -12,10 +12,7 @@ import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
 import filesize from "filesize"
 import {sortBy, last} from "lodash"
-
-const filenamifyExtreme = string => {
-  return string.replace(/([#$%&.])/g, "") |> filenamify
-}
+import sortKeys from "sort-keys"
 
 class Vlc {
 
@@ -80,50 +77,77 @@ class Vlc {
       callback(result)
     })
     socket.on("queueInfo", async ({videoId, videoInfo, downloadFormat}) => {
-      try {
-        const safeTitle = videoInfo.title |> filenamifyExtreme
-        const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
-        const infoFile = path.join(downloadFolder, "info.json")
-        const downloadFile = path.join(downloadFolder, safeTitle)
-        await fsp.outputJson(infoFile, videoInfo)
-        logger.debug("Preparing video: %s", videoInfo.title)
-        const execResult = await execa(config.youtubeDl.path, [
-          "--no-color",
-          "--ignore-config",
-          "--abort-on-error",
-          "--netrc",
-          "--format",
-          downloadFormat,
-          "--cookies",
-          config.youtubeDl.cookieFile,
-          "--mark-watched",
-          "audio-quality",
-          1,
-          "--load-info-json",
-          infoFile,
-          "--output",
-          downloadFile,
-        ])
-        const actualDownloadFile = findByExtension(["webm", "mp4", "mkv", "avi", "flv"], {
-          absolute: true,
-          cwd: downloadFolder,
-        })
-        const stat = await fsp.stat(actualDownloadFile)
-        const bytes = stat.size
-        logger.info("Downloaded %s bytes to %s", bytes |> filesize, actualDownloadFile)
-        socket.emit("videoDownloaded", {
-          videoId,
-          bytes,
-          infoFile,
-          videoFile: actualDownloadFile,
-        })
-        return
-      } catch (error) {
-        logger.error("queueInfo: %s", error)
-        return
-      }
+      videoInfo.videoId = videoId
+      videoInfo.downloadFormat = downloadFormat
+      const {infoFile} = this.getPathsFromVideoInfo(videoInfo)
+      await fsp.outputJson(infoFile, videoInfo |> sortKeys)
+      socket.emit("setInfoFile", {
+        videoId,
+        infoFile,
+      })
+      await this.download(videoInfo)
     })
     logger.info("VLC is initialized")
+  }
+
+  getPathsFromVideoInfo(videoInfo) {
+    const filenamifyExtreme = string => {
+      return string.replace(/([#$%&.])/g, "") |> filenamify
+    }
+    const safeTitle = videoInfo.title |> filenamifyExtreme
+    const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
+    const downloadFile = path.join(downloadFolder, safeTitle)
+    const infoFile = path.join(downloadFolder, "info.json")
+    return {
+      safeTitle,
+      downloadFolder,
+      downloadFile,
+      infoFile,
+    }
+  }
+
+  async download(videoInfo) {
+    try {
+      const {infoFile, downloadFile, downloadFolder} = this.getPathsFromVideoInfo(videoInfo)
+      logger.debug("Preparing video: %s", videoInfo.title)
+      const execResult = await execa(config.youtubeDl.path, [
+        "--no-color",
+        "--ignore-config",
+        "--abort-on-error",
+        "--netrc",
+        "--format",
+        videoInfo.downloadFormat,
+        "--cookies",
+        config.youtubeDl.cookieFile,
+        "--mark-watched",
+        "audio-quality",
+        1,
+        "--load-info-json",
+        infoFile,
+        "--output",
+        downloadFile,
+      ])
+      if (execResult.failed) {
+        logger.error("Video download may have failed\nCommand: %s\nCode: %s\nOutput: %s", execResult.command, execResult.exitCode, execResult.all)
+      } else {
+        logger.info("Executed %s", execResult.command)
+      }
+      const actualDownloadFile = findByExtension(["webm", "mp4", "mkv", "avi", "flv", "mp3", "flac", "wav", "aac", "3gp"], {
+        absolute: true,
+        cwd: downloadFolder,
+      })
+      const stat = await fsp.stat(actualDownloadFile)
+      const bytes = stat.size
+      logger.info("Downloaded %s to %s", bytes |> filesize, actualDownloadFile)
+      socket.emit("videoDownloaded", {
+        videoId: videoInfo.videoId,
+        bytes,
+        infoFile,
+        videoFile: actualDownloadFile,
+      })
+    } catch (error) {
+      logger.error("Failed to download #%s \"%s\": %s", videoInfo.videoId, videoInfo.title, error)
+    }
   }
 
   async queueFile(file) {

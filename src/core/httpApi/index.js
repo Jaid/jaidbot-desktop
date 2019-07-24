@@ -16,6 +16,7 @@ class HttpApi {
         await vlc.queueFile(nextVideo.videoFile)
         response.send(`OK, ${nextVideo.videoFile}`)
       } else {
+        logger.warn("Got no next video from server playlist")
         response.send("EMPTY")
       }
     })
