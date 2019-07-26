@@ -10,19 +10,26 @@ import hasContent from "has-content"
 logger.info(`${_PKG_TITLE} v${_PKG_VERSION}`)
 
 const job = async () => {
-  vlc.init()
-  await httpApi.init()
-  const videosToDownload = await emitPromise(socket, "getDownloadJobs")
-  if (videosToDownload |> hasContent) {
-    logger.info("%s videos to download", videosToDownload.length)
-    const jobs = videosToDownload.map(async ({id, downloadFormat, info}) => {
-      info.videoId = id
-      info.downloadFormat = downloadFormat
-      await vlc.download(info)
+  try {
+    vlc.init()
+    await httpApi.init()
+    socket.on("connect", async () => {
+      const videosToDownload = await emitPromise(socket, "getDownloadJobs")
+      if (videosToDownload |> hasContent) {
+        logger.info("%s videos to download", videosToDownload.length)
+        const jobs = videosToDownload.map(async ({id, downloadFormat, info}) => {
+          info.videoId = id
+          info.downloadFormat = downloadFormat
+          await vlc.download(info)
+        })
+        await Promise.all(jobs)
+      }
     })
-    await Promise.all(jobs)
+    intervalPromise(() => vlc.sendStatusToServer(), ms`5 seconds`)
+  } catch (error) {
+    logger.error("Could not initialize: %s", error)
+    process.exit(1)
   }
-  intervalPromise(() => vlc.sendStatusToServer(), ms`5 seconds`)
 }
 
 job()

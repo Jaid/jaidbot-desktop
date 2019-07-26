@@ -268,6 +268,9 @@ class Vlc {
 
   async sendStatusToServer() {
     try {
+      if (!socket.connected) {
+        return
+      }
       const status = await this.getState()
       if (!status?.information) {
         return
