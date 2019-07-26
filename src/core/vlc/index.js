@@ -271,8 +271,12 @@ class Vlc {
     if (!status?.information) {
       return
     }
-    const durationValue = status.information.category.meta.DURATION
-    const durationParsed = /(?<hours>\d+):(?<minutes>\d+):(?<seconds>[\d.]+)/.exec(durationValue).groups
+    const durationValue = status.information?.category?.meta?.DURATION
+    const durationParsed = /(?<hours>\d+):(?<minutes>\d+):(?<seconds>[\d.]+)/.exec(durationValue)?.groups
+    if (!durationParsed) {
+      logger.warn("Skipping VLC heartbeat, because %s could not be parsed", durationValue)
+      return
+    }
     const durationSeconds = Number(durationParsed.seconds) + durationParsed.minutes * 60 + durationParsed.hours * 3600
     const durationMs = Math.floor(durationSeconds * 1000)
     socket.emit("vlcState", {
