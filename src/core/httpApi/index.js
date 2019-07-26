@@ -2,8 +2,9 @@ import express from "express"
 import logger from "core:lib/logger"
 import config from "core:lib/config"
 import socket from "core:src/socket"
-import emitPromise from "emit-promise"
+import {emitTimeout} from "emit-promise"
 import vlc from "core:src/vlc"
+import ms from "ms.macro"
 
 class HttpApi {
 
@@ -12,7 +13,7 @@ class HttpApi {
     this.app.get("/play", async (request, response) => {
       try {
         logger.info("PLAY")
-        const nextVideo = await emitPromise(socket, "getNextVideo")
+        const nextVideo = await emitTimeout(socket, ms`10 seconds`, "getNextVideo")
         if (nextVideo) {
           logger.info("Next video: %s", nextVideo.videoFile)
           await vlc.queueFile(nextVideo.videoFile)
