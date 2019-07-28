@@ -37,49 +37,74 @@ class Vlc {
     })
 
     socket.on("getVlcState", async callback => {
-      const vlcState = await this.getState()
-      if (!vlcState) {
-        callback("noVlc")
+      try {
+        const vlcState = await this.getState()
+        if (!vlcState) {
+          callback("noVlc")
+          return
+        }
+        callback(vlcState)
+        return
+      } catch (error) {
+        logger.error("Error in getVlcState handler: %s", error)
+        callback(false)
         return
       }
-      callback(vlcState)
     })
     socket.on("getVlcVideo", async callback => {
-      const vlcState = await this.getState()
-      if (!vlcState) {
-        callback("noVlc")
+      try {
+        const vlcState = await this.getState()
+        if (!vlcState) {
+          callback("noVlc")
+          return
+        }
+        if (vlcState.currentplid < 0) {
+          callback("noVideo")
+          return
+        }
+        const videoFile = await this.getCurrentVideoPath()
+        if (!videoFile) {
+          callback("videoNotOnDisk")
+          return
+        }
+        const videoInfo = await this.getMetaForVideo(videoFile)
+        if (!videoInfo) {
+          callback("noInfoFound")
+          return
+        }
+        const {size: videoSize} = await fsp.stat(videoFile)
+        callback({
+          videoInfo,
+          videoFile,
+          videoSize,
+          vlcState,
+        })
+        return
+      } catch (error) {
+        logger.error("Error in getVlcVideo handler: %s", error)
+        callback(false)
         return
       }
-      if (vlcState.currentplid < 0) {
-        callback("noVideo")
-        return
-      }
-      const videoFile = await this.getCurrentVideoPath()
-      if (!videoFile) {
-        callback("videoNotOnDisk")
-        return
-      }
-      const videoInfo = await this.getMetaForVideo(videoFile)
-      if (!videoInfo) {
-        callback("noInfoFound")
-        return
-      }
-      const {size: videoSize} = await fsp.stat(videoFile)
-      callback({
-        videoInfo,
-        videoFile,
-        videoSize,
-        vlcState,
-      })
     })
     socket.on("sendVlcCommand", async (command, callback) => {
-      const result = await this.sendCommand(command)
-      callback(result)
+      try {
+        const result = await this.sendCommand(command)
+        callback(result)
+        return
+      } catch (error) {
+        logger.error("Error in sendVlcCommand handler: %s", error)
+        callback(false)
+        return
+      }
     })
     socket.on("queueInfo", async ({videoId, videoInfo, downloadFormat}) => {
-      videoInfo.videoId = videoId
-      videoInfo.downloadFormat = downloadFormat
-      await this.download(videoInfo)
+      try {
+        videoInfo.videoId = videoId
+        videoInfo.downloadFormat = downloadFormat
+        await this.download(videoInfo)
+      } catch (error) {
+        logger.error("Error in queueInfo handler: %s", error)
+      }
     })
     socket.on("fetchVideoInfo", async (url, callback) => {
       try {
