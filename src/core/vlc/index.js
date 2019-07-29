@@ -13,6 +13,8 @@ import filenamify from "filenamify-shrink"
 import filesize from "filesize"
 import {sortBy, last} from "lodash"
 import sortKeys from "sort-keys"
+import emitPromise from "emit-promise"
+import ms from "ms.macro"
 
 class Vlc {
 
@@ -127,7 +129,29 @@ class Vlc {
         return
       }
     })
+    socket.on("playVideo", this.handlePlayVideo)
     logger.info("VLC is initialized")
+  }
+
+  async handlePlayVideo({videoFile, timestamp}, callback) {
+    try {
+      await this.queueFile(videoFile)
+      const timestampMinus10 = timestamp - ms`10 seconds`
+      if (timestampMinus10 > 0) {
+        const timestampSeconds = Math.floor(timestampMinus10 / 1000)
+        logger.info("Skipping to second %s", timestampSeconds)
+        await this.sendCommand({
+          command: "seek",
+          val: `${timestampSeconds}s`,
+        })
+      }
+      callback(true)
+      return
+    } catch (error) {
+      logger.error("Error in handlePlayVideo: %s", error)
+      callback(false)
+      return
+    }
   }
 
   getPathsFromVideoInfo(videoInfo) {
