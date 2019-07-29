@@ -13,7 +13,6 @@ import filenamify from "filenamify-shrink"
 import filesize from "filesize"
 import {sortBy, last} from "lodash"
 import sortKeys from "sort-keys"
-import emitPromise from "emit-promise"
 import ms from "ms.macro"
 
 class Vlc {
@@ -129,13 +128,14 @@ class Vlc {
         return
       }
     })
-    socket.on("playVideo", this.handlePlayVideo)
+    socket.on("playVideo", (payload, callback) => this.handlePlayVideo(payload, callback))
     logger.info("VLC is initialized")
   }
 
   async handlePlayVideo({videoFile, timestamp}, callback) {
     try {
-      await this.queueFile(videoFile)
+      await this.got(`playlist.json?command=in_play&input=file:///${videoFile}`)
+      logger.info("Playing %s", videoFile)
       const timestampMinus10 = timestamp - ms`10 seconds`
       if (timestampMinus10 > 0) {
         const timestampSeconds = Math.floor(timestampMinus10 / 1000)
