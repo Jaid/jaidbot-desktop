@@ -184,6 +184,9 @@ class Vlc {
         absolute: true,
         cwd: downloadFolder,
       })
+      if (!actualDownloadFile) {
+        throw new Error(`Could not find download file in ${downloadFolder}`)
+      }
       const stat = await fsp.stat(actualDownloadFile)
       const bytes = stat.size
       logger.info("Downloaded %s to %s", bytes |> filesize, actualDownloadFile)
