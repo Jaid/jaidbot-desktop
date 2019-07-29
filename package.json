@@ -21,7 +21,7 @@
     "googleapis": "^41.0.1",
     "got": "^9.6.0",
     "has-content": "^1.1.0",
-    "humanize-duration": "^3.20.0",
+    "humanize-duration": "^3.20.1",
     "interval-promise": "^1.3.0",
     "jaid-logger": "^1.4.1",
     "millify": "^3.1.0",
