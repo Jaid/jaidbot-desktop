@@ -11,4 +11,3 @@ vlc:
 youtubeDl:
   path: youtube-dl
   downloadFolder: E:/Downloads/Videos
-httpApiPort: 31310
