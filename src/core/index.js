@@ -1,6 +1,5 @@
 import logger from "core:lib/logger"
 import vlc from "core:src/vlc"
-import httpApi from "core:src/httpApi"
 import intervalPromise from "interval-promise"
 import ms from "ms.macro"
 import socket from "core:src/socket"
@@ -12,7 +11,6 @@ logger.info(`${_PKG_TITLE} v${_PKG_VERSION}`)
 const job = async () => {
   try {
     vlc.init()
-    await httpApi.init()
     socket.on("connect", async () => {
       const videosToDownload = await emitPromise.withDefaultTimeout(socket, "getDownloadJobs")
       if (videosToDownload |> hasContent) {
