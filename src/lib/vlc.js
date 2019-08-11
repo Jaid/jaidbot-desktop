@@ -1,12 +1,10 @@
 import path from "path"
 
-import got from "got"
+import {got, config, logger} from "src/core"
 import fastDecodeUriComponent from "fast-decode-uri-component"
 import fsp from "@absolunet/fsp"
 import preventStart from "prevent-start"
-import socket from "core:src/socket"
-import logger from "core:lib/logger"
-import config from "core:lib/config"
+import socket from "lib/socket"
 import execa from "execa"
 import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
@@ -19,22 +17,15 @@ class Vlc {
 
   init() {
     this.got = got.extend({
-      baseUrl: `http://${config.vlc.host}/requests`,
-      auth: `:${config.vlc.password}`,
+      baseUrl: `http://${config.vlcApiHost}/requests`,
+      auth: `${config.vlcApiUser}:${config.vlcApiPassword}`,
       throwHttpErrors: false,
       retry: {
         retries: 3,
         errorCodes: ["ETIMEDOUT", " ECONNRESET", "EADDRINUSE", "EPIPE", "ENOTFOUND", "ENETUNREACH", "EAI_AGAIN"],
       },
       json: true,
-      port: config.vlc.port,
-      hooks: {
-        beforeRequest: [
-          request => {
-            logger.debug("Requested VLC API: %s", request.href)
-          },
-        ],
-      },
+      port: config.vlcApiPort,
     })
 
     socket.on("getVlcState", async callback => {
@@ -109,12 +100,12 @@ class Vlc {
     })
     socket.on("fetchVideoInfo", async (url, callback) => {
       try {
-        const execResult = await execa(config.youtubeDl.path, [
+        const execResult = await execa(config.youtubeDlPath, [
           "--no-color",
           "--ignore-config",
           "--netrc",
           "--cookies",
-          config.youtubeDl.cookieFile,
+          config.youtubeDlCookieFile,
           "--dump-single-json",
           url,
         ])
@@ -159,7 +150,7 @@ class Vlc {
       return string.replace(/([#$%&.])/g, "") |> filenamify
     }
     const safeTitle = videoInfo.title |> filenamifyExtreme
-    const downloadFolder = path.join(config.youtubeDl.downloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
+    const downloadFolder = path.join(config.videoDownloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
     const downloadFile = path.join(downloadFolder, safeTitle)
     const infoFile = path.join(downloadFolder, "info.json")
     return {
@@ -182,7 +173,7 @@ class Vlc {
           videoId: videoInfo.videoId,
         })
       }
-      const execResult = await execa(config.youtubeDl.path, [
+      const execResult = await execa(config.youtubeDlPath, [
         "--no-color",
         "--ignore-config",
         "--abort-on-error",
@@ -190,7 +181,7 @@ class Vlc {
         "--format",
         videoInfo.downloadFormat,
         "--cookies",
-        config.youtubeDl.cookieFile,
+        config.youtubeDlCookieFile,
         "--mark-watched",
         "audio-quality",
         1,

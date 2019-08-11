@@ -1,20 +1,23 @@
-import logger from "core:lib/logger"
-import vlc from "core:src/vlc"
+import {logger} from "src/core"
+import vlc from "lib/vlc"
 import intervalPromise from "interval-promise"
 import ms from "ms.macro"
-import socket from "core:src/socket"
+import socket from "lib/socket"
 import emitPromise from "emit-promise"
 import hasContent from "has-content"
+import plural from "pluralize-inclusive"
 
-logger.info(`${_PKG_TITLE} v${_PKG_VERSION}`)
+export default class {
 
-const job = async () => {
-  try {
+  /**
+   * @param {import("jaid-core").default} core
+   */
+  async ready() {
     vlc.init()
     socket.on("connect", async () => {
       const videosToDownload = await emitPromise.withDefaultTimeout(socket, "getDownloadJobs")
       if (videosToDownload |> hasContent) {
-        logger.info("%s videos to download", videosToDownload.length)
+        logger.info("%s to download", plural("video", videosToDownload.length))
         const jobs = videosToDownload.map(async ({id, downloadFormat, info}) => {
           info.videoId = id
           info.downloadFormat = downloadFormat
@@ -24,10 +27,6 @@ const job = async () => {
       }
     })
     intervalPromise(() => vlc.sendStatusToServer(), ms`5 seconds`)
-  } catch (error) {
-    logger.error("Could not initialize: %s", error)
-    process.exit(1)
   }
-}
 
-job()
+}

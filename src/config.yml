@@ -1,0 +1,8 @@
+botServerUrl: localhost
+vlcPath: vlc
+vlcApiUser: ""
+vlcApiHost: localhost
+vlcApiPort: 8080
+youtubeDlPath: youtube-dl
+youtubeDlCookieFile: C:/Downloads/Videos/cookies.txt
+videoDownloadFolder: C:/Downloads/Videos
