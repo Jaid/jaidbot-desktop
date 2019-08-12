@@ -7,7 +7,7 @@ import emitPromise from "emit-promise"
 import hasContent from "has-content"
 import plural from "pluralize-inclusive"
 
-export default class {
+export default class Main {
 
   /**
    * @param {import("jaid-core").default} core
