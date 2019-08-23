@@ -5,6 +5,7 @@ import defaults from "./config.yml"
 const core = new JaidCore({
   name: _PKG_TITLE,
   version: _PKG_VERSION,
+  useGot: true,
   configSetup: {
     defaults,
     secretKeys: [

@@ -30,6 +30,7 @@
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
     "openurl2": "^1.0.1",
+    "p-queue": "^6.1.1",
     "parse-duration": "^0.1.1",
     "pify": "^4.0.1",
     "pluralize-inclusive": "^1.0.0",
@@ -40,7 +41,8 @@
     "string-argv": "^0.3.0",
     "twitch": "^3.4.2",
     "twitch-chat-client": "^3.4.2",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.4.7",
+    "zahl": "^2.0.0"
   },
   "devDependencies": {
     "acorn": "^7.0.0",
