@@ -1,10 +1,9 @@
 import path from "path"
 
-import {config, logger} from "src/core"
+import {logger} from "src/core"
 import fastDecodeUriComponent from "fast-decode-uri-component"
 import fsp from "@absolunet/fsp"
 import preventStart from "prevent-start"
-import socket from "lib/socket"
 import execa from "execa"
 import findByExtension from "find-by-extension"
 import filenamify from "filenamify-shrink"
@@ -19,20 +18,35 @@ const filenamifyExtreme = string => {
 
 class Vlc {
 
-  init(core) {
-    this.got = core.got.extend({
-      baseUrl: `http://${config.vlcApiHost}/requests`,
-      auth: `${config.vlcApiUser}:${config.vlcApiPassword}`,
+  setCoreReference(core) {
+    this.core = core
+  }
+
+  handleConfig(config) {
+    this.host = config.vlcApiHost
+    this.user = config.vlcApiUser
+    this.password = config.vlcApiPassword
+    this.port = config.vlcApiPort
+    this.youtubeDlPath = config.youtubeDlPath
+    this.youtubeDlCookieFile = config.youtubeDlCookieFile
+    this.downloadFolder = config.videoDownloadFolder
+  }
+
+  init() {
+    this.socket = this.core.plugins.socketClient.socket
+    this.got = this.core.got.extend({
+      baseUrl: `http://${this.host}/requests`,
+      auth: `${this.user}:${this.password}`,
       throwHttpErrors: false,
       retry: {
         retries: 3,
         errorCodes: ["ETIMEDOUT", " ECONNRESET", "EADDRINUSE", "EPIPE", "ENOTFOUND", "ENETUNREACH", "EAI_AGAIN"],
       },
       json: true,
-      port: config.vlcApiPort,
+      port: this.port,
     })
 
-    socket.on("getVlcState", async callback => {
+    this.socket.on("getVlcState", async callback => {
       try {
         const vlcState = await this.getState()
         if (!vlcState) {
@@ -47,7 +61,7 @@ class Vlc {
         return
       }
     })
-    socket.on("getVlcVideo", async callback => {
+    this.socket.on("getVlcVideo", async callback => {
       try {
         const vlcState = await this.getState()
         if (!vlcState) {
@@ -82,7 +96,7 @@ class Vlc {
         return
       }
     })
-    socket.on("sendVlcCommand", async (command, callback) => {
+    this.socket.on("sendVlcCommand", async (command, callback) => {
       try {
         const result = await this.sendCommand(command)
         callback(result)
@@ -93,7 +107,7 @@ class Vlc {
         return
       }
     })
-    socket.on("queueInfo", async ({videoId, videoInfo, downloadFormat}) => {
+    this.socket.on("queueInfo", async ({videoId, videoInfo, downloadFormat}) => {
       try {
         videoInfo.videoId = videoId
         videoInfo.downloadFormat = downloadFormat
@@ -102,14 +116,14 @@ class Vlc {
         logger.error("Error in queueInfo handler: %s", error)
       }
     })
-    socket.on("fetchVideoInfo", async (url, callback) => {
+    this.socket.on("fetchVideoInfo", async (url, callback) => {
       try {
-        const execResult = await execa(config.youtubeDlPath, [
+        const execResult = await execa(this.youtubeDlPath, [
           "--no-color",
           "--ignore-config",
           "--netrc",
           "--cookies",
-          config.youtubeDlCookieFile,
+          this.youtubeDlCookieFile,
           "--dump-single-json",
           url,
         ])
@@ -123,7 +137,7 @@ class Vlc {
         return
       }
     })
-    socket.on("playVideo", (payload, callback) => this.handlePlayVideo(payload, callback))
+    this.socket.on("playVideo", (payload, callback) => this.handlePlayVideo(payload, callback))
     logger.info("VLC is initialized")
   }
 
@@ -151,10 +165,8 @@ class Vlc {
 
   getPathsFromVideoInfo(videoInfo) {
     const safeTitle = videoInfo.title |> filenamifyExtreme
-    // const downloadFolder = path.join(config.videoDownloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
-    // const downloadFile = path.join(downloadFolder, safeTitle)
-    const downloadFolder = path.join(config.videodownloadFolder, videoInfo.id)
-    const downloadFile = path.join(downloadFolder, `${videoInfo.height}p`)
+    const downloadFolder = path.join(this.downloadFolder, String(videoInfo.videoId))
+    const downloadFile = path.join(downloadFolder, videoInfo.height ? `${videoInfo.height}p` : "video")
     const infoFile = path.join(downloadFolder, "info.json")
     return {
       safeTitle,
@@ -171,12 +183,12 @@ class Vlc {
       const infoFileExists = await fsp.pathExists(infoFile)
       if (!infoFileExists) {
         await fsp.outputJson(infoFile, videoInfo |> sortKeys)
-        socket.emit("setInfoFile", {
+        this.socket.emit("setInfoFile", {
           infoFile,
           videoId: videoInfo.videoId,
         })
       }
-      const execResult = await execa(config.youtubeDlPath, [
+      const execResult = await execa(this.youtubeDlPath, [
         "--no-color",
         "--ignore-config",
         "--abort-on-error",
@@ -184,7 +196,7 @@ class Vlc {
         "--format",
         videoInfo.downloadFormat,
         "--cookies",
-        config.youtubeDlCookieFile,
+        this.youtubeDlCookieFile,
         "--mark-watched",
         "audio-quality",
         1,
@@ -208,7 +220,7 @@ class Vlc {
       const stat = await fsp.stat(actualDownloadFile)
       const bytes = stat.size
       logger.info("Downloaded %s to %s", bytes |> filesize, actualDownloadFile)
-      socket.emit("videoDownloaded", {
+      this.socket.emit("videoDownloaded", {
         videoId: videoInfo.videoId,
         bytes,
         infoFile,
@@ -314,7 +326,7 @@ class Vlc {
 
   async sendStatusToServer() {
     try {
-      if (!socket.connected) {
+      if (!this.socket.connected) {
         return
       }
       const status = await this.getState()
@@ -335,7 +347,7 @@ class Vlc {
         durationSeconds = status.length
       }
       const durationMs = Math.floor(durationSeconds * 1000)
-      socket.emit("vlcState", {
+      this.socket.emit("vlcState", {
         durationMs,
         position: status.position,
         state: status.state,
