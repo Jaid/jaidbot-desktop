@@ -11,11 +11,15 @@ import zahl from "zahl"
 
 export default class Main {
 
+  setCoreReference(core) {
+    this.core = core
+  }
+
   /**
    * @param {import("jaid-core").default} core
    */
   async ready() {
-    vlc.init()
+    vlc.init(this.core)
     this.downloadQueue = new Queue({concurrency: 3})
     socket.on("connect", async () => {
       if (this.downloadQueue.size > 0) {

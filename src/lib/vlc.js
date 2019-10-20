@@ -1,6 +1,6 @@
 import path from "path"
 
-import {got, config, logger} from "src/core"
+import {config, logger} from "src/core"
 import fastDecodeUriComponent from "fast-decode-uri-component"
 import fsp from "@absolunet/fsp"
 import preventStart from "prevent-start"
@@ -13,10 +13,14 @@ import {sortBy, last} from "lodash"
 import sortKeys from "sort-keys"
 import ms from "ms.macro"
 
+const filenamifyExtreme = string => {
+  return string.replace(/([#$%&.])/g, "") |> filenamify
+}
+
 class Vlc {
 
-  init() {
-    this.got = got.extend({
+  init(core) {
+    this.got = core.got.extend({
       baseUrl: `http://${config.vlcApiHost}/requests`,
       auth: `${config.vlcApiUser}:${config.vlcApiPassword}`,
       throwHttpErrors: false,
@@ -146,12 +150,11 @@ class Vlc {
   }
 
   getPathsFromVideoInfo(videoInfo) {
-    const filenamifyExtreme = string => {
-      return string.replace(/([#$%&.])/g, "") |> filenamify
-    }
     const safeTitle = videoInfo.title |> filenamifyExtreme
-    const downloadFolder = path.join(config.videoDownloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
-    const downloadFile = path.join(downloadFolder, safeTitle)
+    // const downloadFolder = path.join(config.videoDownloadFolder, videoInfo.extractor |> filenamifyExtreme, videoInfo.uploader |> filenamifyExtreme, safeTitle)
+    // const downloadFile = path.join(downloadFolder, safeTitle)
+    const downloadFolder = path.join(config.videodownloadFolder, videoInfo.id)
+    const downloadFile = path.join(downloadFolder, `${videoInfo.height}p`)
     const infoFile = path.join(downloadFolder, "info.json")
     return {
       safeTitle,
