@@ -16,7 +16,7 @@
     "fast-decode-uri-component": "^1.0.1",
     "filenamify": "^4.1.0",
     "filenamify-shrink": "^1.0.0",
-    "filesize": "^6.0.0",
+    "filesize": "^6.0.1",
     "find-by-extension": "^1.1.1",
     "googleapis": "^45.0.0",
     "got": "^9.6.0",
