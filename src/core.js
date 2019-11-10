@@ -6,6 +6,7 @@ const core = new JaidCore({
   name: _PKG_TITLE,
   version: _PKG_VERSION,
   useGot: true,
+  insecurePort: 17444,
   configSetup: {
     defaults,
     secretKeys: [
