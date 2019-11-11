@@ -1,38 +1,91 @@
 import {logger} from "src/core"
-import Obs from "obs-websocket-js"
+import ObsWebsocket from "obs-websocket-js"
 import {isEmpty} from "has-content"
+import filterNil from "filter-nil"
 
-class Vlc {
+class Obs {
 
-  obs = new Obs
+  obs = new ObsWebsocket
 
   setCoreReference(core) {
     this.core = core
   }
 
   handleConfig(config) {
+    if (config.obsPort |> isEmpty) {
+      return false
+    }
     this.port = config.obsPort
-    this.password = config.obsPassword
+    if (config.obsPassword |> isEmpty) {
+      return false
+    }
+    this.password = String(config.obsPassword)
   }
 
   async init() {
-    if (this.port |> isEmpty) {
-      return false
-    }
-    if (this.password |> isEmpty) {
-      return false
-    }
     await this.obs.connect({
       address: `localhost:${this.port}`,
       password: this.password,
     })
+    await this.showSource("Facecam")
   }
 
-  async hideSource(name) {
-    const scenes = await this.obs.send("GetSceneList")
-    debugger
+  /**
+   * @param {string} itemName
+   * @return {{foundSource: import("obs-websocket-js").SceneItem, scene: import("obs-websocket-js").Scene}[]}
+   */
+  async getScenesWithSource(itemName) {
+    const itemNameNormalized = String(itemName).replace(/\s+/g, "").toLowerCase()
+    const {scenes} = await this.obs.send("GetSceneList")
+    const foundScenes = scenes.map(scene => {
+      if (scene.sources |> isEmpty) {
+        return null
+      }
+      const foundSource = scene.sources.find(source => {
+        const sourceNameNormalized = source.name.replace(/\s+/g, "").toLowerCase()
+        return sourceNameNormalized === itemNameNormalized
+      })
+      if (!foundSource) {
+        return null
+      }
+      return {
+        scene,
+        foundSource,
+      }
+    })
+    return filterNil(foundScenes)
+  }
+
+  /**
+   * @param {string} itemName
+   */
+  async hideSource(itemName) {
+    const scenesWithSource = await this.getScenesWithSource(itemName)
+    const relevantScenes = scenesWithSource.filter(({foundSource}) => foundSource.render)
+    for (const {scene, foundSource} of relevantScenes) {
+      await this.obs.send("SetSceneItemProperties", {
+        "scene-name": scene.name,
+        item: foundSource.name,
+        visible: false,
+      })
+    }
+  }
+
+  /**
+   * @param {string} itemName
+   */
+  async showSource(itemName) {
+    const scenesWithSource = await this.getScenesWithSource(itemName)
+    const relevantScenes = scenesWithSource.filter(({foundSource}) => !foundSource.render)
+    for (const {scene, foundSource} of relevantScenes) {
+      await this.obs.send("SetSceneItemProperties", {
+        "scene-name": scene.name,
+        item: foundSource.name,
+        visible: true,
+      })
+    }
   }
 
 }
 
-export default new Vlc
+export default new Obs

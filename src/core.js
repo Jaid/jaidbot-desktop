@@ -12,6 +12,7 @@ const core = new JaidCore({
     secretKeys: [
       "vlcApiPassword",
       "botPassword",
+      "obsPassword",
     ],
   },
 })
