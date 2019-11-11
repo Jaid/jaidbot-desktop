@@ -32,7 +32,7 @@
     "moment-duration-format": "^2.3.2",
     "obs-websocket-js": "^3.1.0",
     "openurl2": "^1.0.1",
-    "p-queue": "^6.2.0",
+    "p-queue": "^6.2.1",
     "parse-duration": "^0.1.1",
     "pify": "^4.0.1",
     "pluralize-inclusive": "^1.0.0",
