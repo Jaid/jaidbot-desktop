@@ -60,6 +60,7 @@ class Obs {
    * @param {string} itemName
    */
   async hideSource(itemName) {
+    logger.info(`Hiding scene ${itemName}`)
     const scenesWithSource = await this.getScenesWithSource(itemName)
     const relevantScenes = scenesWithSource.filter(({foundSource}) => foundSource.render)
     for (const {scene, foundSource} of relevantScenes) {
@@ -75,6 +76,7 @@ class Obs {
    * @param {string} itemName
    */
   async showSource(itemName) {
+    logger.info(`Hiding scene ${itemName}`)
     const scenesWithSource = await this.getScenesWithSource(itemName)
     const relevantScenes = scenesWithSource.filter(({foundSource}) => !foundSource.render)
     for (const {scene, foundSource} of relevantScenes) {
