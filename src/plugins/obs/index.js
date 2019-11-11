@@ -27,7 +27,6 @@ class Obs {
       address: `localhost:${this.port}`,
       password: this.password,
     })
-    await this.showSource("Facecam")
   }
 
   /**
