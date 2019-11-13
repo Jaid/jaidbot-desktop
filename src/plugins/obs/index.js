@@ -29,6 +29,34 @@ class Obs {
     })
   }
 
+  postInit() {
+    this.socket = this.core.plugins.socketClient.socket
+  }
+
+  ready() {
+    this.socket.on("showObsSource", async (sourceName, callback) => {
+      try {
+        const affectedScenes = await this.showSource(sourceName)
+        callback(affectedScenes)
+        return
+      } catch (error) {
+        callback(false)
+        return
+      }
+    })
+
+    this.socket.on("hideObsSource", async (sourceName, callback) => {
+      try {
+        const affectedScenes = await this.hideSource(sourceName)
+        callback(affectedScenes)
+        return
+      } catch (error) {
+        callback(false)
+        return
+      }
+    })
+  }
+
   /**
    * @param {string} itemName
    * @return {{foundSource: import("obs-websocket-js").SceneItem, scene: import("obs-websocket-js").Scene}[]}
@@ -57,9 +85,10 @@ class Obs {
 
   /**
    * @param {string} itemName
+   * @return {number} Number of modified scenes
    */
   async hideSource(itemName) {
-    logger.info(`Hiding scene ${itemName}`)
+    logger.info(`Hiding source ${itemName}`)
     const scenesWithSource = await this.getScenesWithSource(itemName)
     const relevantScenes = scenesWithSource.filter(({foundSource}) => foundSource.render)
     for (const {scene, foundSource} of relevantScenes) {
@@ -69,13 +98,15 @@ class Obs {
         visible: false,
       })
     }
+    return relevantScenes.length
   }
 
   /**
    * @param {string} itemName
+   * @return {number} Number of modified scenes
    */
   async showSource(itemName) {
-    logger.info(`Hiding scene ${itemName}`)
+    logger.info(`Showing source ${itemName}`)
     const scenesWithSource = await this.getScenesWithSource(itemName)
     const relevantScenes = scenesWithSource.filter(({foundSource}) => !foundSource.render)
     for (const {scene, foundSource} of relevantScenes) {
@@ -85,6 +116,7 @@ class Obs {
         visible: true,
       })
     }
+    return relevantScenes.length
   }
 
 }
