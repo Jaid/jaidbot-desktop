@@ -3,19 +3,19 @@
     "charset": "utf8",
     "baseUrl": "./",
     "paths": {
+      "lib/*": [
+        "src/lib/*"
+      ],
+      "src/*": [
+        "src/*"
+      ],
       "root/*": [
         "./*"
-      ],
-      "core:src/*": [
-        "src/core/*"
-      ],
-      "core:lib/*": [
-        "src/core/lib/*"
-      ],
-    },
+      ]
+    }
   },
   "exclude": [
     "node_modules",
     "dist"
-  ],
+  ]
 }
