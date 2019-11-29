@@ -1,6 +1,5 @@
 {
   "title": "Jaidbot Desktop",
-  "private": true,
   "webpackConfigJaid": "cli",
   "version": "2.1.0",
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
@@ -73,5 +72,6 @@
     "test:coverage": "npm run test:dev -- --coverage --json --outputFile=dist/jest/stats.json",
     "test:dev": "NODE_ENV=test jest --runInBand",
     "test:debug": "npm run start"
-  }
+  },
+  "name": "jaidbot-desktop"
 }
