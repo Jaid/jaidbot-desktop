@@ -52,13 +52,13 @@
     "ajv": "^6.10.2",
     "babel-jest": "^24.9.0",
     "babel-plugin-pkg": "^1.2.2",
-    "babel-preset-jaid": "^6.10.0",
+    "babel-preset-jaid": "^6.11.1",
     "caniuse-lite": "^1.0.30001012",
     "eslint": "^6.7.1",
-    "eslint-config-jaid": "^1.36.0",
+    "eslint-config-jaid": "^1.37.0",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "webpack-config-jaid": "^5.27.10"
+    "webpack-config-jaid": "^5.29.1"
   },
   "scripts": {
     "clean": "rimraf dist/",
