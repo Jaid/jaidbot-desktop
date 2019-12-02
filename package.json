@@ -74,5 +74,6 @@
     "test:debug": "npm run start",
     "prepareActionJest": "npm run build:prod"
   },
-  "name": "jaidbot-desktop"
+  "name": "jaidbot-desktop",
+  "description": "Desktop manager that connects to a Jaidbot server."
 }
