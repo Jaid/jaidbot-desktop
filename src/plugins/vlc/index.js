@@ -314,9 +314,12 @@ class Vlc {
     }
   }
 
-  async sendCommand(query) {
+  async sendCommand(searchParams) {
     try {
-      await this.got("status.json", {query})
+      await this.got("status.json", {
+        searchParams,
+        method: "POST",
+      })
       return true
     } catch {
       return null
