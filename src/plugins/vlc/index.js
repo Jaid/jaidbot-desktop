@@ -34,11 +34,14 @@ class Vlc {
 
   init() {
     this.socket = this.core.plugins.socketClient.socket
+    /**
+     * @type {import("got").Got}
+     */
     this.got = this.core.got.extend({
       prefixUrl: `http://${this.host}/requests`,
       username: this.user,
       password: this.password,
-      json: true,
+      responseType: "json",
       port: this.port,
     })
 
@@ -234,8 +237,8 @@ class Vlc {
 
   async getState() {
     try {
-      const {body} = await this.got("status.json")
-      return body
+      const result = await this.got("status.json")
+      return result.body
     } catch (error) {
       logger.error("Could not get VLC state\n%s", error)
       return null
