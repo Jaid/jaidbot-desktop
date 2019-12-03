@@ -10,7 +10,4 @@ const job = async () => {
   await core.init(plugins)
 }
 
-job().catch(error => {
-  console.error(error)
-  process.exit(1)
-})
+job()
