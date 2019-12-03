@@ -6,29 +6,14 @@ Desktop manager that connects to a Jaidbot server.
 ## Installation
 <a href='https://npmjs.com/package/jaidbot-desktop'><img alt='npm logo' src='https://raw.githubusercontent.com/npm/logos/master/npm%20logo/npm-logo-red.png' height=16/></a>
 ```bash
-npm install --global jaidbot-desktop@^
+npm install --global jaidbot-desktop@^2.1.0
 ```
 <a href='https://yarnpkg.com/package/jaidbot-desktop'><img alt='Yarn logo' src='https://raw.githubusercontent.com/yarnpkg/assets/master/yarn-kitten-full.png' height=24/></a>
 ```bash
-yarn global add jaidbot-desktop@^
+yarn global add jaidbot-desktop@^2.1.0
 ```
 
 
-## Try it out
-Open a browser's JavaScript console and execute:
-
-```javascript
-const scriptElement = document.createElement("script");
-scriptElement.setAttribute("type","text/javascript");
-scriptElement.setAttribute("src","https://unpkg.com/jaidbot-desktop@2.1.0");
-document.querySelector("head").appendChild(scriptElement);
-```
-
-The module is now loaded in a variable.
-
-```javascript
-typeof jaidbot-desktop.default
-```
 
 
 ## License
