@@ -1,16 +1,16 @@
-import path from "path"
-
-import {logger} from "src/core"
-import fastDecodeUriComponent from "fast-decode-uri-component"
 import fsp from "@absolunet/fsp"
-import preventStart from "prevent-start"
 import execa from "execa"
-import findByExtension from "find-by-extension"
+import fastDecodeUriComponent from "fast-decode-uri-component"
 import filenamify from "filenamify-shrink"
 import filesize from "filesize"
-import {sortBy, last} from "lodash"
-import sortKeys from "sort-keys"
+import findByExtension from "find-by-extension"
+import {last, sortBy} from "lodash"
 import ms from "ms.macro"
+import path from "path"
+import preventStart from "prevent-start"
+import sortKeys from "sort-keys"
+
+import {logger} from "src/core"
 
 const filenamifyExtreme = string => {
   return string.replace(/([#$%&.])/g, "") |> filenamify
@@ -35,13 +35,9 @@ class Vlc {
   init() {
     this.socket = this.core.plugins.socketClient.socket
     this.got = this.core.got.extend({
-      baseUrl: `http://${this.host}/requests`,
-      auth: `${this.user}:${this.password}`,
-      throwHttpErrors: false,
-      retry: {
-        retries: 3,
-        errorCodes: ["ETIMEDOUT", " ECONNRESET", "EADDRINUSE", "EPIPE", "ENOTFOUND", "ENETUNREACH", "EAI_AGAIN"],
-      },
+      prefixUrl: `http://${this.host}/requests`,
+      username: this.user,
+      password: this.password,
       json: true,
       port: this.port,
     })
