@@ -1,6 +1,8 @@
-import core, {logger} from "src/core"
 import socketIo from "socket.io"
+
 import socketEnhancer from "lib/socketEnhancer"
+
+import core, {logger} from "src/core"
 
 class SocketClient {
 

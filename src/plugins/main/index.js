@@ -1,11 +1,12 @@
-import {logger} from "src/core"
-import intervalPromise from "interval-promise"
-import ms from "ms.macro"
 import emitPromise from "emit-promise"
 import hasContent from "has-content"
-import plural from "pluralize-inclusive"
+import intervalPromise from "interval-promise"
+import ms from "ms.macro"
 import Queue from "p-queue"
+import plural from "pluralize-inclusive"
 import zahl from "zahl"
+
+import {logger} from "src/core"
 
 export default class Main {
 

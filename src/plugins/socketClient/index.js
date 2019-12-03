@@ -1,6 +1,7 @@
-import socketIoClient from "socket.io-client"
-import {logger} from "src/core"
 import ms from "ms.macro"
+import socketIoClient from "socket.io-client"
+
+import {logger} from "src/core"
 
 class SocketClient {
 

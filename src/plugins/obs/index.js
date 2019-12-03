@@ -1,7 +1,8 @@
-import {logger} from "src/core"
-import ObsWebsocket from "obs-websocket-js"
-import {isEmpty} from "has-content"
 import filterNil from "filter-nil"
+import {isEmpty} from "has-content"
+import ObsWebsocket from "obs-websocket-js"
+
+import {logger} from "src/core"
 
 class Obs {
 
