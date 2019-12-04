@@ -4,11 +4,11 @@
 Desktop manager that connects to a Jaidbot server.
 
 ## Installation
-<a href='https://npmjs.com/package/jaidbot-desktop'><img alt='npm logo' src='https://raw.githubusercontent.com/npm/logos/master/npm%20logo/npm-logo-red.png' height=16/></a>
+<a href='https://npmjs.com/package/jaidbot-desktop'><img alt='npm logo' src='https://github.com/Jaid/action-readme/raw/master/images/base-assets/npm.png' height=24/></a>
 ```bash
 npm install --global jaidbot-desktop@^2.1.0
 ```
-<a href='https://yarnpkg.com/package/jaidbot-desktop'><img alt='Yarn logo' src='https://raw.githubusercontent.com/yarnpkg/assets/master/yarn-kitten-full.png' height=24/></a>
+<a href='https://yarnpkg.com/package/jaidbot-desktop'><img alt='Yarn logo' src='https://github.com/Jaid/action-readme/raw/master/images/base-assets/yarn.png' height=24/></a>
 ```bash
 yarn global add jaidbot-desktop@^2.1.0
 ```
