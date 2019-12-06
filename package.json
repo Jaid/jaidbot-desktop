@@ -5,7 +5,7 @@
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fsp": "^1.6.2",
-    "@babel/runtime": "^7.7.4",
+    "@babel/runtime": "^7.7.5",
     "debug": "^4.1.1",
     "emit-promise": "^3.1.0",
     "essential-config": "^4.0.2",
@@ -52,7 +52,7 @@
     "ajv": "^6.10.2",
     "babel-jest": "^24.9.0",
     "babel-plugin-pkg": "^1.2.2",
-    "babel-preset-jaid": "^6.11.2",
+    "babel-preset-jaid": "^6.11.3",
     "caniuse-lite": "^1.0.30001015",
     "eslint": "^6.7.2",
     "eslint-config-jaid": "^1.41.0",
