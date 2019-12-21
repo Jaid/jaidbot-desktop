@@ -23,8 +23,11 @@ class SocketClient {
   }
 
   ready() {
-    this.socket.on("updateChatters", async chatters => {
+    this.socket.on("updateChatters", chatters => {
       this.socketServer.emit("updateChatters", chatters)
+    })
+    this.socket.on("forwardToOverlay", (eventName, payload) => {
+      this.socketServer.emit(eventName, payload)
     })
   }
 
