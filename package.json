@@ -76,5 +76,9 @@
   },
   "name": "jaidbot-desktop",
   "description": "Desktop manager that connects to a Jaidbot server.",
-  "funding": "https://github.com/sponsors/jaid"
+  "funding": "https://github.com/sponsors/jaid",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaid/jaidbot-desktop"
+  }
 }
