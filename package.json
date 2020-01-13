@@ -75,5 +75,6 @@
     "prepareActionJest": "npm run build:prod"
   },
   "name": "jaidbot-desktop",
-  "description": "Desktop manager that connects to a Jaidbot server."
+  "description": "Desktop manager that connects to a Jaidbot server.",
+  "funding": "https://github.com/sponsors/jaid"
 }
