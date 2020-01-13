@@ -1,9 +1,9 @@
 # Jaidbot Desktop
 
 
-<a href="https://raw.githubusercontent.com/Jaid/jaidbot-desktop/master/license.txt"><img src="https://img.shields.io/github/license/Jaid/jaidbot-desktop?style=flat-square" alt="License"/></a>  
-<a href="https://actions-badge.atrox.dev/Jaid/jaidbot-desktop/goto"><img src="https://img.shields.io/endpoint.svg?style=flat-square&url=https%3A%2F%2Factions-badge.atrox.dev%2FJaid%2Fjaidbot-desktop%2Fbadge" alt="Build status"/></a> <a href="https://github.com/Jaid/jaidbot-desktop/commits"><img src="https://img.shields.io/github/commits-since/Jaid/jaidbot-desktop/v2.1.0?style=flat-square&logo=github" alt="Commits since v2.1.0"/></a> <a href="https://github.com/Jaid/jaidbot-desktop/commits"><img src="https://img.shields.io/github/last-commit/Jaid/jaidbot-desktop?style=flat-square&logo=github" alt="Last commit"/></a> <a href="https://github.com/Jaid/jaidbot-desktop/issues"><img src="https://img.shields.io/github/issues/Jaid/jaidbot-desktop?style=flat-square&logo=github" alt="Issues"/></a>  
-<a href="https://npmjs.com/package/jaidbot-desktop"><img src="https://img.shields.io/npm/v/jaidbot-desktop?style=flat-square&logo=npm&label=latest%20version" alt="Latest version on npm"/></a> <a href="https://github.com/Jaid/jaidbot-desktop/network/dependents"><img src="https://img.shields.io/librariesio/dependents/npm/jaidbot-desktop?style=flat-square&logo=npm" alt="Dependents"/></a> <a href="https://npmjs.com/package/jaidbot-desktop"><img src="https://img.shields.io/npm/dm/jaidbot-desktop?style=flat-square&logo=npm" alt="Downloads"/></a>
+<a href="https://raw.githubusercontent.com/jaid/jaidbot-desktop/master/license.txt"><img src="https://img.shields.io/github/license/jaid/jaidbot-desktop?style=flat-square" alt="License"/></a> <a href="https://github.com/sponsors/jaid"><img src="https://img.shields.io/badge/<3-Sponsor-FF45F1?style=flat-square" alt="Sponsor jaidbot-desktop"/></a>
+<a href="https://actions-badge.atrox.dev/jaid/jaidbot-desktop/goto"><img src="https://img.shields.io/endpoint.svg?style=flat-square&url=https%3A%2F%2Factions-badge.atrox.dev%2Fjaid%2Fjaidbot-desktop%2Fbadge" alt="Build status"/></a> <a href="https://github.com/jaid/jaidbot-desktop/commits"><img src="https://img.shields.io/github/commits-since/jaid/jaidbot-desktop/v2.1.0?style=flat-square&logo=github" alt="Commits since v2.1.0"/></a> <a href="https://github.com/jaid/jaidbot-desktop/commits"><img src="https://img.shields.io/github/last-commit/jaid/jaidbot-desktop?style=flat-square&logo=github" alt="Last commit"/></a> <a href="https://github.com/jaid/jaidbot-desktop/issues"><img src="https://img.shields.io/github/issues/jaid/jaidbot-desktop?style=flat-square&logo=github" alt="Issues"/></a>  
+<a href="https://npmjs.com/package/jaidbot-desktop"><img src="https://img.shields.io/npm/v/jaidbot-desktop?style=flat-square&logo=npm&label=latest%20version" alt="Latest version on npm"/></a> <a href="https://github.com/jaid/jaidbot-desktop/network/dependents"><img src="https://img.shields.io/librariesio/dependents/npm/jaidbot-desktop?style=flat-square&logo=npm" alt="Dependents"/></a> <a href="https://npmjs.com/package/jaidbot-desktop"><img src="https://img.shields.io/npm/dm/jaidbot-desktop?style=flat-square&logo=npm" alt="Downloads"/></a>
 
 **Desktop manager that connects to a Jaidbot server.**
 
@@ -33,7 +33,6 @@ yarn global add jaidbot-desktop@^2.1.0
 
 
 
-
 ## CLI Usage
 After installing package `jaidbot-desktop` globally, you can use its command line interface.
 ```bash
@@ -53,7 +52,7 @@ jaidbot-desktop --help
 
 Setting up:
 ```bash
-git clone git@github.com:Jaid/jaidbot-desktop.git
+git clone git@github.com:jaid/jaidbot-desktop.git
 cd jaidbot-desktop
 npm install
 ```
