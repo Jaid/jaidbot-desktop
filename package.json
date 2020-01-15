@@ -45,6 +45,7 @@
     "twitch": "^3.5.6",
     "twitch-chat-client": "^3.6.0",
     "url-parse": "^1.4.7",
+    "yargs": "^15.1.0",
     "zahl": "^2.0.6"
   },
   "devDependencies": {
