@@ -34,7 +34,7 @@ class Obs {
     this.socket = this.core.plugins.socketClient.socket
   }
 
-  ready() {
+  async ready() {
     this.socket.on("showObsSource", async (sourceName, callback) => {
       try {
         const affectedScenes = await this.showSource(sourceName)
@@ -56,6 +56,8 @@ class Obs {
         return
       }
     })
+
+    await this.hideSource("VLC Fullscreen")
   }
 
   /**
@@ -66,7 +68,7 @@ class Obs {
     const itemNameNormalized = String(itemName).replace(/\s+/g, "").toLowerCase()
     const {scenes} = await this.obs.send("GetSceneList")
     const foundScenes = scenes.map(scene => {
-      if (scene.sources |> isEmpty) {
+      if (isEmpty(scene.sources)) {
         return null
       }
       const foundSource = scene.sources.find(source => {
@@ -92,6 +94,7 @@ class Obs {
     logger.info(`Hiding source ${itemName}`)
     const scenesWithSource = await this.getScenesWithSource(itemName)
     const relevantScenes = scenesWithSource.filter(({foundSource}) => foundSource.render)
+    logger.debug(`Affected scenes: ${relevantScenes.map(scene => scene.scene.name).join(", ")}`)
     for (const {scene, foundSource} of relevantScenes) {
       await this.obs.send("SetSceneItemProperties", {
         "scene-name": scene.name,
@@ -105,11 +108,15 @@ class Obs {
   /**
    * @param {string} itemName
    * @return {number} Number of modified scenes
+   * TODO: This is currently bugged
+   * SetSceneItemProperties affects one random source that matches "scene-name" and "item"
+   * Does not deliver consistent results for scenes where an item (top-level or grouped) exists more than once
    */
   async showSource(itemName) {
     logger.info(`Showing source ${itemName}`)
     const scenesWithSource = await this.getScenesWithSource(itemName)
     const relevantScenes = scenesWithSource.filter(({foundSource}) => !foundSource.render)
+    logger.debug(`Affected scenes: ${relevantScenes.map(scene => scene.scene.name).join(", ")}`)
     for (const {scene, foundSource} of relevantScenes) {
       await this.obs.send("SetSceneItemProperties", {
         "scene-name": scene.name,
