@@ -56,8 +56,6 @@ class Obs {
         return
       }
     })
-
-    await this.hideSource("VLC Fullscreen")
   }
 
   /**
