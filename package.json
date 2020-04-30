@@ -82,5 +82,12 @@
     "url": "https://github.com/jaid/jaidbot-desktop"
   },
   "homepage": "https://github.com/Jaid/jaidbot-desktop",
-  "keywords": []
+  "keywords": [
+    "bot",
+    "cli",
+    "client",
+    "jaidbot",
+    "jaidbot-server",
+    "tool"
+  ]
 }
