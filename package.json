@@ -90,5 +90,6 @@
     "jaidbot",
     "jaidbot-server",
     "tool"
-  ]
+  ],
+  "type": "module"
 }
