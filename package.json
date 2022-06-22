@@ -18,7 +18,7 @@
     "filter-nil": "^1.0.1",
     "find-by-extension": "^1.1.1",
     "googleapis": "^49.0.0",
-    "got": "^10.7.0",
+    "got": "^11.8.5",
     "has-content": "^1.1.1",
     "humanize-duration": "^3.22.0",
     "interval-promise": "^1.4.0",
